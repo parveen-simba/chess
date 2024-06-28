@@ -1,124 +1,5 @@
 import React, { useState, useEffect } from "react";
-import styled from "styled-components";
-
-const TournamentsWrapper = styled.div`
-  margin-top: 5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-const NoBroadcastsMessage = styled.p`
-  color: #faf9f6; /* White color */
-  font-size: 1.2em; /* Bigger font size */
-`;
-
-const Card = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  border: ${(props) =>
-    props.selected ? "10px solid #4CAF50" : "1px solid #ccc"};
-  padding: 1rem;
-  margin: 1rem 0;
-  border-radius: 1rem;
-  cursor: pointer;
-  background-color: ${(props) =>
-    props.selected ? "rgba(76, 175, 80, 0.3)" : "rgba(1, 1, 4, 0.6)"};
-  transition: all 0.3s ease-in-out;
-  transform: perspective(1px) translateZ(0);
-  width: 80%;
-  max-width: 600px;
-
-  &:hover {
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
-    border-color: #4caf50;
-    transform: scale(1.05);
-  }
-
-  .card-image {
-    width: 100%; /* Adjust the width of the image */
-    height: auto; /* Maintain aspect ratio */
-    margin-bottom: 1rem; /* Add some space below the image */
-  }
-`;
-
-const CardHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-`;
-
-const CardTitle = styled.h2`
-  font-size: 1.8em;
-  color: #faf9f6;
-  margin-bottom: 1rem;
-`;
-
-const CardDate = styled.p`
-  font-size: 1em;
-  color: #faf9f6;
-  margin-bottom: 1rem;
-`;
-
-const CardDescription = styled.p`
-  font-size: 1em;
-  color: #faf9f6;
-  margin-bottom: 1rem;
-  height: 4em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-
-const Button = styled.a`
-  margin-top: 0.5rem;
-  padding: 0.5rem 1rem;
-  background-color: #4caf50;
-  color: white;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: background-color 0.3s, box-shadow 0.3s;
-
-  &:hover {
-    background-color: #36a420;
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-  }
-`;
-
-const Title = styled.h1`
-  border-bottom: 5px solid #4caf50;
-  padding-bottom: 1rem;
-  font-size: 2em;
-  font-weight: bold;
-  color: #4caf50;
-  text-align: center;
-  margin-bottom: 3rem;
-`;
-
-const SearchWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-bottom: 2rem;
-`;
-
-const SearchInput = styled.input`
-  margin-right: 1rem;
-  padding: 0.5rem;
-  font-size: 1em;
-`;
-
-const SearchButton = styled.button`
-  padding: 0.5rem 1rem;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: background-color 0.3s;
-
-  &:hover {
-    background-color: #36a420;
-  }
-`;
+import "tailwindcss/tailwind.css";
 
 const TournamentsList = ({ onSelect }) => {
   const [tournaments, setTournaments] = useState([]);
@@ -149,9 +30,7 @@ const TournamentsList = ({ onSelect }) => {
           setBroadcasts(false);
         }
       })
-      .catch((error) =>
-        console.error("Error fetching tournaments:", error)
-      );
+      .catch((error) => console.error("Error fetching tournaments:", error));
   }, []);
 
   const handleSearch = () => {
@@ -177,80 +56,112 @@ const TournamentsList = ({ onSelect }) => {
   };
 
   return (
-    <TournamentsWrapper>
-      <Title>LIVE BROADCASTS</Title>
-      <SearchWrapper>
-        <SearchInput
+    <div className="mt-20 flex flex-col items-center">
+      <h1 className="border-b-4 border-green-500 pb-4 text-2xl font-bold text-green-500 text-center mb-12">
+        LIVE BROADCASTS
+      </h1>
+      <div className="flex justify-center mb-8 space-x-4">
+        <input
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Search tournaments..."
+          className="mr-4 p-2 text-base border rounded"
         />
-        <SearchButton onClick={handleSearch}>Search</SearchButton>
-
-        <SearchInput
+        <button
+          onClick={handleSearch}
+          className="p-2 bg-green-500 text-white rounded hover:bg-green-600"
+        >
+          Search
+        </button>
+        <input
           value={customUrl}
           onChange={handleCustomUrlChange}
           placeholder="Enter custom Lichess URL..."
+          className="mr-4 p-2 text-base border rounded"
         />
-        <SearchButton onClick={onSelectTournament}>Go</SearchButton>
-      </SearchWrapper>
-      <Button
+        <button
+          onClick={onSelectTournament}
+          className="p-2 bg-green-500 text-white rounded hover:bg-green-600"
+        >
+          Go
+        </button>
+      </div>
+      <button
         onClick={() => {
           onSelect(selectedTournaments);
           setSelectedTournaments([]);
         }}
+        className="mb-8 p-2 bg-green-500 text-white rounded hover:bg-green-600"
       >
         Confirm
-      </Button>
-      {filteredTournaments.map((tournament, index) =>
-        tournament.tour && tournament.rounds && tournament.rounds.length > 0 ? (
-          <Card
-            key={tournament.tour.id}
-            selected={selectedTournaments.includes(tournament.tour.id)}
-          >
-            {tournament.image && (
-              <img
-                className="card-image"
-                src={tournament.image}
-                alt="Tournament Image"
-              />
-            )}
-            <input
-              type="checkbox"
-              checked={checkedItems[tournament.tour.id]}
-              onChange={() => {
-                setCheckedItems((prevState) => ({
-                  ...prevState,
-                  [tournament.tour.id]: !prevState[tournament.tour.id],
-                }));
-                const ongoingRound = tournament.rounds.find(
-                  (round) => round.ongoing === true
-                );
-                if (ongoingRound) {
-                  setSelectedTournaments((prevTournaments) =>
-                    prevTournaments.includes(ongoingRound.id)
-                      ? prevTournaments.filter((id) => id !== ongoingRound.id)
-                      : [...prevTournaments, ongoingRound.id]
-                  );
-                }
-              }}
-            />
-            <CardHeader>
-              <CardTitle>{tournament.tour.name}</CardTitle>
-              <CardDate>{tournament.tour.date}</CardDate>
-            </CardHeader>
-            <CardDescription>{tournament.tour.description}</CardDescription>
-            <Button
-              href={tournament.tour.url}
-              target="_blank"
-              rel="noreferrer"
+      </button>
+      {filteredTournaments.length === 0 ? (
+        <p className="text-white text-xl">No broadcasts available</p>
+      ) : (
+        filteredTournaments.map((tournament) =>
+          tournament.tour &&
+          tournament.rounds &&
+          tournament.rounds.length > 0 ? (
+            <div
+              key={tournament.tour.id}
+              className={`flex flex-col items-start border ${
+                selectedTournaments.includes(tournament.tour.id)
+                  ? "border-4 border-green-500"
+                  : "border border-gray-300"
+              } p-4 m-4 rounded cursor-pointer bg-opacity-60 ${
+                selectedTournaments.includes(tournament.tour.id)
+                  ? "bg-green-100"
+                  : "bg-gray-800"
+              } transition-transform transform hover:scale-105 w-full max-w-2xl`}
             >
-              Official Website
-            </Button>
-          </Card>
-        ) : null
+              {tournament.image && (
+                <img
+                  className="w-full h-auto mb-4"
+                  src={tournament.image}
+                  alt="Tournament"
+                />
+              )}
+              <input
+                type="checkbox"
+                checked={checkedItems[tournament.tour.id]}
+                onChange={() => {
+                  setCheckedItems((prevState) => ({
+                    ...prevState,
+                    [tournament.tour.id]: !prevState[tournament.tour.id],
+                  }));
+                  const ongoingRound = tournament.rounds.find(
+                    (round) => round.ongoing === true
+                  );
+                  if (ongoingRound) {
+                    setSelectedTournaments((prevTournaments) =>
+                      prevTournaments.includes(ongoingRound.id)
+                        ? prevTournaments.filter((id) => id !== ongoingRound.id)
+                        : [...prevTournaments, ongoingRound.id]
+                    );
+                  }
+                }}
+                className="mb-4"
+              />
+              <div className="flex justify-between w-full mb-4">
+                <h2 className="text-lg text-white">{tournament.tour.name}</h2>
+                <p className="text-base text-white">{tournament.tour.date}</p>
+              </div>
+              <p className="text-base text-white mb-4 truncate-3-lines">
+                {tournament.tour.description}
+              </p>
+              <a
+                href={tournament.tour.url}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-2 p-2 bg-green-500 text-white rounded hover:bg-green-600"
+              >
+                Official Website
+              </a>
+            </div>
+          ) : null
+        )
       )}
-    </TournamentsWrapper>
+    </div>
   );
 };
 
